@@ -77,12 +77,14 @@ public abstract class NotificationTestCase extends HadoopTestCase {
     }
     webServer = new Server(0);
 
-    ServletContextHandler context =
-        new ServletContextHandler(webServer, contextPath);
+    ServletContextHandler context = new ServletContextHandler();
+    context.setContextPath(contextPath);
 
     // create servlet handler
     context.addServlet(new ServletHolder(new NotificationServlet()),
                        servletPath);
+
+    webServer.setHandler(context);
 
     // Start webServer
     webServer.start();
