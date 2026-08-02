@@ -124,7 +124,7 @@ public class ContainerShellWebSocket {
           .terminal(terminal)
           .build();
     } catch (IOException e) {
-      session.close(1002, e.getMessage());
+      session.close(1002, e.getMessage(), Callback.NOOP);
     }
   }
 
