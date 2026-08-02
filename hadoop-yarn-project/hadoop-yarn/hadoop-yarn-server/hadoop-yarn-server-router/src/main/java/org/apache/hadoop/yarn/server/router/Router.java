@@ -68,7 +68,6 @@ import org.apache.hadoop.yarn.webapp.WebApps.Builder;
 import org.apache.hadoop.yarn.webapp.util.WebAppUtils;
 import org.apache.hadoop.yarn.webapp.util.WebServiceClient;
 import org.eclipse.jetty.ee10.webapp.WebAppContext;
-import org.eclipse.jetty.util.resource.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -277,7 +276,7 @@ public class Router extends CompositeService {
           uiWebAppContext.setWar(onDiskPath);
           LOG.info("Using war file at: {}.", onDiskPath);
         } else {
-          uiWebAppContext.setBaseResource(Resource.newResource(onDiskPath));
+          uiWebAppContext.setBaseResourceAsString(onDiskPath);
           LOG.info("Using webapps at: {}.", onDiskPath);
         }
       }

@@ -140,7 +140,6 @@ import org.apache.hadoop.yarn.webapp.WebApps.Builder;
 import org.apache.hadoop.yarn.webapp.util.WebAppUtils;
 import org.apache.zookeeper.server.auth.DigestAuthenticationProvider;
 import org.eclipse.jetty.ee10.webapp.WebAppContext;
-import org.eclipse.jetty.util.resource.Resource;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -1477,7 +1476,7 @@ public class ResourceManager extends CompositeService
           uiWebAppContext.setWar(onDiskPath);
           LOG.info("Using war file at: {}.", onDiskPath);
         } else {
-          uiWebAppContext.setBaseResource(Resource.newResource(onDiskPath));
+          uiWebAppContext.setBaseResourceAsString(onDiskPath);
           LOG.info("Using webapps at: {}.", onDiskPath);
         }
       }
@@ -1509,7 +1508,7 @@ public class ResourceManager extends CompositeService
           schedulerUiWebAppContext.setWar(onDiskPath);
           LOG.info("Using war file at: {}.", onDiskPath);
         } else {
-          schedulerUiWebAppContext.setBaseResource(Resource.newResource(onDiskPath));
+          schedulerUiWebAppContext.setBaseResourceAsString(onDiskPath);
           LOG.info("Using webapps at: {}.", onDiskPath);
         }
       }

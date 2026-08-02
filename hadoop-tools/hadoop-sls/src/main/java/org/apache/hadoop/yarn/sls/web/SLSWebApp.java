@@ -47,7 +47,6 @@ import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.eclipse.jetty.server.handler.ResourceHandler;
-import org.eclipse.jetty.util.resource.Resource;
 import com.codahale.metrics.Counter;
 import com.codahale.metrics.Gauge;
 import com.codahale.metrics.Histogram;
@@ -136,7 +135,7 @@ public class SLSWebApp extends HttpServlet {
     staticHandler.setMimeTypes(new MimeTypes());
     String webRootDir = getClass().getClassLoader().getResource("html").
         toExternalForm();
-    staticHandler.setBaseResource(Resource.newResource(webRootDir));
+    staticHandler.setBaseResourceAsString(webRootDir);
     staticHandler.start();
 
     Handler handler = new AbstractHandler() {
