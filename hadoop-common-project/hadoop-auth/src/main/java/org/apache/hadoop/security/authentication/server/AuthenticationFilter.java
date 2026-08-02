@@ -630,7 +630,6 @@ public class AuthenticationFilter implements Filter {
           reason = authenticationEx.getMessage();
         }
 
-        httpResponse.setStatus(errCode, reason);
         httpResponse.sendError(errCode, reason);
       }
     }
