@@ -151,8 +151,13 @@ public class ContainerShellWebSocket {
       pair.in.close();
       pair.out.close();
     } catch (IOException e) {
+      LOG.debug("Error during session close cleanup", e);
     } finally {
-      session.close();
+      try {
+        session.close();
+      } catch (IOException e) {
+        LOG.debug("Error closing session", e);
+      }
     }
   }
 
