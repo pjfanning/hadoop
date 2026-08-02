@@ -397,16 +397,6 @@ public class TestAmFilter {
     }
 
     @Override
-    public String encodeUrl(String url) {
-      return null;
-    }
-
-    @Override
-    public String encodeRedirectUrl(String url) {
-      return null;
-    }
-
-    @Override
     public void sendError(int sc, String msg) throws IOException {
       this.status = sc;
     }
@@ -419,11 +409,6 @@ public class TestAmFilter {
     @Override
     public void setStatus(int status) {
       this.status = status;
-    }
-
-    @Override
-    public void setStatus(int sc, String sm) {
-
     }
 
     @Override

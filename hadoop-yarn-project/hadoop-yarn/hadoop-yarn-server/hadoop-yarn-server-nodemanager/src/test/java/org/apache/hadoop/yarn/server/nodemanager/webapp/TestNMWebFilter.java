@@ -169,16 +169,6 @@ public class TestNMWebFilter {
     }
 
     @Override
-    public String encodeUrl(String url) {
-      return null;
-    }
-
-    @Override
-    public String encodeRedirectUrl(String url) {
-      return null;
-    }
-
-    @Override
     public void sendError(int sc, String msg) throws IOException {
 
     }
@@ -191,11 +181,6 @@ public class TestNMWebFilter {
     @Override
     public void setStatus(int status) {
       this.status = status;
-    }
-
-    @Override
-    public void setStatus(int sc, String sm) {
-
     }
 
     @Override
