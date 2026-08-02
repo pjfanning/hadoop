@@ -98,12 +98,8 @@ public class ContainerShellWebSocket {
         Thread.sleep(100);
       }
       inputThread.join();
-    } catch (IOException | InterruptedException e) {
-      try {
-        mySession.disconnect();
-      } catch (IOException e1) {
-        LOG.error("Error closing connection: ", e1);
-      }
+    } catch (InterruptedException e) {
+      mySession.disconnect();
     }
   }
 
