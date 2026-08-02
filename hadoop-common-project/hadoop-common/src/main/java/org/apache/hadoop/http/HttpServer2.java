@@ -101,6 +101,7 @@ import org.eclipse.jetty.server.SecureRequestCustomizer;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.SslConnectionFactory;
+import org.eclipse.jetty.server.handler.ContextHandlerCollection;
 import org.eclipse.jetty.server.handler.StatisticsHandler;
 import org.eclipse.jetty.ee10.servlet.SessionHandler;
 import org.eclipse.jetty.ee10.servlet.FilterHolder;
@@ -763,7 +764,7 @@ public final class HttpServer2 implements FilterContainer {
       throws IOException {
 
     Preconditions.checkNotNull(webAppContext);
-    webAppContext.getErrorHandler().setShowStacks(LOG.isTraceEnabled());
+    // Jetty 12: setShowStacks removed from ErrorHandler
 
     int maxThreads = conf.getInt(HTTP_MAX_THREADS_KEY, -1);
     // If HTTP_MAX_THREADS is not configured, QueueThreadPool() will use the
@@ -779,7 +780,7 @@ public final class HttpServer2 implements FilterContainer {
     handler.setHttpOnly(true);
     handler.getSessionCookieConfig().setSecure(true);
 
-    Handler.Collection contexts = new Handler.Collection();
+    ContextHandlerCollection contexts = new ContextHandlerCollection();
     RequestLog requestLog = HttpRequestLog.getRequestLog(name);
 
     handlers.addHandler(contexts);
@@ -827,7 +828,7 @@ public final class HttpServer2 implements FilterContainer {
     addAsyncProfilerServlet(contexts, conf);
   }
 
-  private void addAsyncProfilerServlet(Handler.Collection contexts, Configuration conf)
+  private void addAsyncProfilerServlet(ContextHandlerCollection contexts, Configuration conf)
       throws IOException {
     final String asyncProfilerHome = ProfileServlet.getAsyncProfilerHome();
     if (asyncProfilerHome != null && !asyncProfilerHome.trim().isEmpty()) {
@@ -836,9 +837,10 @@ public final class HttpServer2 implements FilterContainer {
       if (Files.notExists(tmpDir)) {
         Files.createDirectories(tmpDir);
       }
-      ServletContextHandler genCtx = new ServletContextHandler(contexts, "/prof-output-hadoop");
+      ServletContextHandler genCtx = new ServletContextHandler("/prof-output-hadoop");
+      contexts.addHandler(genCtx);
       genCtx.addServlet(ProfileOutputServlet.class, "/*");
-      genCtx.setResourceBase(tmpDir.toAbsolutePath().toString());
+      genCtx.setBaseResourceAsString(tmpDir.toAbsolutePath().toString());
       genCtx.setDisplayName("prof-output-hadoop");
       setContextAttributes(genCtx, conf);
     } else {
@@ -956,7 +958,7 @@ public final class HttpServer2 implements FilterContainer {
    * @param conf configuration.
    * @throws IOException raised on errors performing I/O.
    */
-  protected void addDefaultApps(Handler.Collection parent,
+  protected void addDefaultApps(ContextHandlerCollection parent,
       final String appDir, Configuration conf) throws IOException {
     // set up the context for "/logs/" if "hadoop.log.dir" property is defined
     // and it's enabled.
@@ -966,8 +968,9 @@ public final class HttpServer2 implements FilterContainer {
         CommonConfigurationKeys.HADOOP_HTTP_LOGS_ENABLED_DEFAULT);
     if (logDir != null && logsEnabled) {
       ServletContextHandler logContext =
-          new ServletContextHandler(parent, "/logs");
-      logContext.setResourceBase(logDir);
+          new ServletContextHandler("/logs");
+      parent.addHandler(logContext);
+      logContext.setBaseResourceAsString(logDir);
       logContext.addServlet(AdminAuthorizedServlet.class, "/*");
       if (conf.getBoolean(
           CommonConfigurationKeys.HADOOP_JETTY_LOGS_SERVE_ALIASES,
@@ -988,8 +991,9 @@ public final class HttpServer2 implements FilterContainer {
     }
     // set up the context for "/static/*"
     ServletContextHandler staticContext =
-        new ServletContextHandler(parent, "/static");
-    staticContext.setResourceBase(appDir + "/static");
+        new ServletContextHandler("/static");
+    parent.addHandler(staticContext);
+    staticContext.setBaseResourceAsString(appDir + "/static");
     staticContext.addServlet(WebServlet.class, "/*");
     staticContext.setDisplayName("static");
     @SuppressWarnings("unchecked")
@@ -1201,8 +1205,8 @@ public final class HttpServer2 implements FilterContainer {
    * @param handler The handler to add
    */
   public void addHandlerAtFront(Handler handler) {
-    Handler[] h = ArrayUtil.prependToArray(
-        handler, this.handlers.getHandlers(), Handler.class);
+    List<Handler> h = new ArrayList<>(handlers.getHandlers());
+    h.add(0, handler);
     handlers.setHandlers(h);
   }
 
@@ -1462,7 +1466,7 @@ public final class HttpServer2 implements FilterContainer {
         throw ex;
       }
       // Make sure there is no handler failures.
-      Handler[] hs = webServer.getHandlers();
+      List<Handler> hs = webServer.getHandlers();
       for (Handler handler : hs) {
         if (handler.isFailed()) {
           throw new IOException(

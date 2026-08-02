@@ -27,8 +27,8 @@ import com.fasterxml.jackson.databind.AnnotationIntrospector;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.type.TypeFactory;
-import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
-import com.fasterxml.jackson.module.jaxb.JaxbAnnotationIntrospector;
+import com.fasterxml.jackson.jakarta.rs.json.JacksonJaxbJsonProvider;
+import com.fasterxml.jackson.module.jakarta.xmlbind.JakartaXmlBindAnnotationIntrospector;
 import org.apache.hadoop.classification.InterfaceAudience.Private;
 import org.apache.hadoop.classification.InterfaceStability.Unstable;
 import org.apache.hadoop.yarn.api.records.timeline.TimelineAbout;
@@ -61,7 +61,7 @@ public class YarnJacksonJaxbJsonProvider extends JacksonJaxbJsonProvider {
 
   public static void configObjectMapper(ObjectMapper mapper) {
     AnnotationIntrospector introspector =
-        new JaxbAnnotationIntrospector(TypeFactory.defaultInstance());
+        new JakartaXmlBindAnnotationIntrospector(TypeFactory.defaultInstance());
     mapper.setAnnotationIntrospector(introspector);
     mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
   }

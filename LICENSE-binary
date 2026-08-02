@@ -226,9 +226,9 @@ com.cedarsoftware:json-io:2.5.1
 com.fasterxml.jackson.core:jackson-annotations:2.18.9
 com.fasterxml.jackson.core:jackson-core:2.18.9
 com.fasterxml.jackson.core:jackson-databind:2.18.9
-com.fasterxml.jackson.jaxrs:jackson-jaxrs-base:2.18.9
-com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.18.9
-com.fasterxml.jackson.module:jackson-module-jaxb-annotations:2.18.9
+com.fasterxml.jackson.jakarta.rs:jackson-jakarta-rs-base:2.18.9
+com.fasterxml.jackson.jakarta.rs:jackson-jakarta-rs-json-provider:2.18.9
+com.fasterxml.jackson.module:jackson-module-jakarta-xmlbind-annotations:2.18.9
 com.fasterxml.uuid:java-uuid-generator:3.1.4
 com.fasterxml.woodstox:woodstox-core:5.4.0
 com.github.ben-manes.caffeine:caffeine:2.9.3
