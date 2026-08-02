@@ -150,7 +150,7 @@ public class ApiServerWebApp extends AbstractService {
       logger.info("Context Path = {}", Collections.singletonList(
           apiServer.getWebAppContext().getContextPath()));
       logger.info("ResourceBase = {}", Collections.singletonList(
-          apiServer.getWebAppContext().getResourceBase()));
+          apiServer.getWebAppContext().getBaseResource()));
       logger.info("War = {}", Collections
           .singletonList(apiServer.getWebAppContext().getWar()));
     } catch (Exception ex) {
