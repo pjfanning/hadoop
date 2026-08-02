@@ -19,8 +19,7 @@
 package org.apache.hadoop.yarn.server.nodemanager.webapp;
 
 import org.eclipse.jetty.websocket.api.Session;
-import org.eclipse.jetty.websocket.api.WebSocketAdapter;
-import org.eclipse.jetty.websocket.api.annotations.WebSocket;
+import org.eclipse.jetty.websocket.api.Callback;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,8 +29,7 @@ import java.util.concurrent.CountDownLatch;
 /**
  *  Container shell client socket interface.
  */
-@WebSocket
-public class ContainerShellClientSocketTest extends WebSocketAdapter {
+public class ContainerShellClientSocketTest implements Session.Listener.AutoDemanding {
   private static final Logger LOG =
       LoggerFactory.getLogger(ContainerShellClientSocketTest.class);
   private Session session;
@@ -43,7 +41,7 @@ public class ContainerShellClientSocketTest extends WebSocketAdapter {
   }
 
   @Override
-  public void onWebSocketConnect(Session session) {
+  public void onWebSocketOpen(Session session) {
     LOG.info("Connected to server");
     this.session = session;
     latch.countDown();
@@ -56,7 +54,6 @@ public class ContainerShellClientSocketTest extends WebSocketAdapter {
 
   @Override
   public void onWebSocketError(Throwable cause) {
-    super.onWebSocketError(cause);
     cause.printStackTrace(System.err);
   }
 

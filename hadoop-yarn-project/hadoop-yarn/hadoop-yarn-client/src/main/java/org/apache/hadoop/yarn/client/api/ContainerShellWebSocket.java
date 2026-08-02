@@ -26,7 +26,7 @@ import org.apache.hadoop.classification.InterfaceAudience;
 import org.apache.hadoop.classification.InterfaceStability;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
-import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketOpen;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import org.jline.terminal.Terminal;
@@ -66,7 +66,7 @@ public class ContainerShellWebSocket {
     terminal.output().flush();
   }
 
-  @OnWebSocketConnect
+  @OnWebSocketOpen
   public void onConnect(Session s) {
     initTerminal(s);
     LOG.info("{} connected!", s.getRemoteAddress().getHostString());

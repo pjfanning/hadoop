@@ -19,18 +19,14 @@
 package org.apache.hadoop.yarn.server.nodemanager.webapp;
 
 import jakarta.servlet.annotation.WebServlet;
-
-import org.eclipse.jetty.ee10.websocket.servlet.WebSocketServlet;
-import org.eclipse.jetty.ee10.websocket.servlet.WebSocketServletFactory;
+import jakarta.servlet.http.HttpServlet;
 
 /**
  * Container shell web socket interface.
+ * In Jetty 12 ee10, WebSocket endpoints are registered via
+ * {@code @ServerEndpoint} on the WebSocket class itself.
+ * This servlet is kept for URL mapping compatibility.
  */
 @WebServlet(urlPatterns="/container/container/*")
-public class ContainerShellWebSocketServlet extends WebSocketServlet{
-
-  @Override
-  public void configure(WebSocketServletFactory factory) {
-    factory.register(ContainerShellWebSocket.class);
-  }
+public class ContainerShellWebSocketServlet extends HttpServlet {
 }
