@@ -33,6 +33,7 @@ import org.apache.hadoop.yarn.server.nodemanager.Context;
 import org.apache.hadoop.yarn.server.nodemanager.ContainerExecutor;
 import org.apache.hadoop.yarn.server.nodemanager.containermanager.container.Container;
 import org.apache.hadoop.yarn.server.nodemanager.executor.ContainerExecContext;
+import jakarta.websocket.CloseReason;
 import jakarta.websocket.OnClose;
 import jakarta.websocket.OnMessage;
 import jakarta.websocket.OnOpen;
@@ -88,7 +89,7 @@ public class ContainerShellWebSocket {
         pair.in.read(buffer, 0, Math.min(no, buffer.length));
         String formatted = new String(buffer, StandardCharsets.UTF_8)
             .replaceAll("\n", "\r\n");
-        session.getRemote().sendString(formatted);
+        session.getBasicRemote().sendText(formatted);
       }
     } catch (IOException e) {
       onClose(session, 1001, "Shutdown");
@@ -113,14 +114,17 @@ public class ContainerShellWebSocket {
       Container container = nmContext.getContainers().get(ContainerId
           .fromString(cId));
       if (!checkAuthorization(session, container)) {
-        session.close(1008, "Forbidden");
+        session.close(new CloseReason(
+            CloseReason.CloseCodes.VIOLATED_POLICY, "Forbidden"));
         return;
       }
       if (checkInsecureSetup()) {
-        session.close(1003, "Nonsecure mode is unsupported.");
+        session.close(new CloseReason(
+            CloseReason.CloseCodes.VIOLATED_POLICY,
+            "Nonsecure mode is unsupported."));
         return;
       }
-      LOG.info(session.getRemoteAddress().getHostString() + " connected!");
+      LOG.info("Session {} connected!", session.getId());
       LOG.info(
           "Making interactive connection to running docker container with ID: "
               + cId);
@@ -140,7 +144,7 @@ public class ContainerShellWebSocket {
   @OnClose
   public void onClose(Session session, int status, String reason) {
     try {
-      LOG.info(session.getRemoteAddress().getHostString() + " closed!");
+      LOG.info("Session {} closed!", session.getId());
       String exit = "exit\r\n";
       pair.out.write(exit.getBytes(StandardCharsets.UTF_8));
       pair.out.flush();
