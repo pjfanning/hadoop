@@ -90,6 +90,7 @@ import org.apache.hadoop.util.ReflectionUtils;
 import org.apache.hadoop.util.Shell;
 import org.apache.hadoop.util.StringUtils;
 import org.eclipse.jetty.http.HttpVersion;
+import org.eclipse.jetty.server.AllowedResourceAliasChecker;
 import org.eclipse.jetty.server.ConnectionFactory;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Handler;
@@ -981,8 +982,7 @@ public final class HttpServer2 implements FilterContainer {
       handler.setHttpOnly(true);
       handler.getSessionCookieConfig().setSecure(true);
       logContext.setSessionHandler(handler);
-      // TODO: Jetty 12 - SymlinkAllowedResourceAliasChecker removed, need Jetty 12 equivalent
-      // logContext.addAliasCheck(new SymlinkAllowedResourceAliasChecker(logContext));
+      logContext.addAliasCheck(new AllowedResourceAliasChecker(logContext));
       setContextAttributes(logContext, conf);
       addNoCacheFilter(logContext);
       defaultContexts.put(logContext, true);
@@ -1001,8 +1001,7 @@ public final class HttpServer2 implements FilterContainer {
     handler.setHttpOnly(true);
     handler.getSessionCookieConfig().setSecure(true);
     staticContext.setSessionHandler(handler);
-    // TODO: Jetty 12 - SymlinkAllowedResourceAliasChecker removed, need Jetty 12 equivalent
-    // staticContext.addAliasCheck(new SymlinkAllowedResourceAliasChecker(staticContext));
+    staticContext.addAliasCheck(new AllowedResourceAliasChecker(staticContext));
     setContextAttributes(staticContext, conf);
     defaultContexts.put(staticContext, true);
   }
