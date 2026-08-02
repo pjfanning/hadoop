@@ -44,12 +44,17 @@ public final class HadoopJsonUtils {
 
   /**
    * Parse a JSON string into a Java object (typically a Map or List).
+   * This method replaces {@code org.eclipse.jetty.util.ajax.JSON.parse}
+   * which did not throw checked exceptions.
    * @param json the JSON string
    * @return the parsed object
-   * @throws IOException if the string is not valid JSON
    */
-  public static Object parse(String json) throws IOException {
-    return MAPPER.readValue(json, Object.class);
+  public static Object parse(String json) {
+    try {
+      return MAPPER.readValue(json, Object.class);
+    } catch (IOException e) {
+      throw new RuntimeException("Failed to parse JSON", e);
+    }
   }
 
   /**
