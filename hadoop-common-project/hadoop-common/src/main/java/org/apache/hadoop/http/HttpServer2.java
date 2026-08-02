@@ -44,17 +44,17 @@ import java.util.Timer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletRequestWrapper;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.Filter;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.FilterConfig;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequestWrapper;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.apache.hadoop.classification.VisibleForTesting;
 import org.apache.hadoop.jmx.JMXJsonServletNaNFiltered;
@@ -100,23 +100,19 @@ import org.eclipse.jetty.server.SecureRequestCustomizer;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.SslConnectionFactory;
-import org.eclipse.jetty.server.SymlinkAllowedResourceAliasChecker;
-import org.eclipse.jetty.server.handler.ContextHandlerCollection;
-import org.eclipse.jetty.server.handler.HandlerCollection;
-import org.eclipse.jetty.server.handler.RequestLogHandler;
 import org.eclipse.jetty.server.handler.StatisticsHandler;
-import org.eclipse.jetty.server.session.SessionHandler;
-import org.eclipse.jetty.servlet.FilterHolder;
-import org.eclipse.jetty.servlet.FilterMapping;
-import org.eclipse.jetty.servlet.ServletContextHandler;
-import org.eclipse.jetty.servlet.ServletHandler;
-import org.eclipse.jetty.servlet.ServletHolder;
-import org.eclipse.jetty.servlet.ServletMapping;
+import org.eclipse.jetty.ee10.servlet.SessionHandler;
+import org.eclipse.jetty.ee10.servlet.FilterHolder;
+import org.eclipse.jetty.ee10.servlet.FilterMapping;
+import org.eclipse.jetty.ee10.servlet.ServletContextHandler;
+import org.eclipse.jetty.ee10.servlet.ServletHandler;
+import org.eclipse.jetty.ee10.servlet.ServletHolder;
+import org.eclipse.jetty.ee10.servlet.ServletMapping;
 import org.eclipse.jetty.util.ArrayUtil;
 import org.eclipse.jetty.util.MultiException;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.eclipse.jetty.util.thread.QueuedThreadPool;
-import org.eclipse.jetty.webapp.WebAppContext;
+import org.eclipse.jetty.ee10.webapp.WebAppContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -186,7 +182,7 @@ public final class HttpServer2 implements FilterContainer {
 
   protected final Server webServer;
 
-  private final HandlerCollection handlers;
+  private final Handler.Sequence handlers;
 
   private final List<ServerConnector> listeners = Lists.newArrayList();
 
@@ -739,7 +735,7 @@ public final class HttpServer2 implements FilterContainer {
     final String appDir = getWebAppsPath(b.name);
     this.webServer = new Server();
     this.adminsAcl = b.adminsAcl;
-    this.handlers = new HandlerCollection();
+    this.handlers = new Handler.Sequence();
     this.webAppContext = createWebAppContext(b, adminsAcl, appDir);
     this.xFrameOptionIsEnabled = b.xFrameEnabled;
     this.xFrameOption = b.xFrameOption;
@@ -783,19 +779,18 @@ public final class HttpServer2 implements FilterContainer {
     handler.setHttpOnly(true);
     handler.getSessionCookieConfig().setSecure(true);
 
-    ContextHandlerCollection contexts = new ContextHandlerCollection();
+    Handler.Collection contexts = new Handler.Collection();
     RequestLog requestLog = HttpRequestLog.getRequestLog(name);
 
     handlers.addHandler(contexts);
-    if (requestLog != null) {
-      RequestLogHandler requestLogHandler = new RequestLogHandler();
-      requestLogHandler.setRequestLog(requestLog);
-      handlers.addHandler(requestLogHandler);
-    }
     handlers.addHandler(webAppContext);
     final String appDir = getWebAppsPath(name);
     addDefaultApps(contexts, appDir, conf);
     webServer.setHandler(handlers);
+
+    if (requestLog != null) {
+      webServer.setRequestLog(requestLog);
+    }
 
     if (conf.getBoolean(
         CommonConfigurationKeysPublic.HADOOP_HTTP_METRICS_ENABLED,
@@ -804,16 +799,14 @@ public final class HttpServer2 implements FilterContainer {
       // The tree might look like this:
       //
       // - StatisticsHandler (for all requests)
-      //   - HandlerList
-      //     - ContextHandlerCollection
-      //     - RequestLogHandler (if enabled)
+      //   - Handler.Sequence
+      //     - Handler.Collection (contexts)
       //     - WebAppContext
       //       - SessionHandler
       //       - Servlets
       //       - Filters
       //       - etc..
-      //
-      // Reference: https://www.eclipse.org/lists/jetty-users/msg06273.html
+      //   - RequestLog (set on Server directly)
       statsHandler = new StatisticsHandler();
       webServer.insertHandler(statsHandler);
     }
@@ -834,7 +827,7 @@ public final class HttpServer2 implements FilterContainer {
     addAsyncProfilerServlet(contexts, conf);
   }
 
-  private void addAsyncProfilerServlet(ContextHandlerCollection contexts, Configuration conf)
+  private void addAsyncProfilerServlet(Handler.Collection contexts, Configuration conf)
       throws IOException {
     final String asyncProfilerHome = ProfileServlet.getAsyncProfilerHome();
     if (asyncProfilerHome != null && !asyncProfilerHome.trim().isEmpty()) {
@@ -891,7 +884,7 @@ public final class HttpServer2 implements FilterContainer {
     String tempDirectory = b.conf.get(HTTP_TEMP_DIR_KEY);
     if (tempDirectory != null && !tempDirectory.isEmpty()) {
       ctx.setTempDirectory(new File(tempDirectory));
-      ctx.setAttribute("javax.servlet.context.tempdir", tempDirectory);
+      ctx.setAttribute("jakarta.servlet.context.tempdir", tempDirectory);
     }
     ctx.getServletContext().setAttribute(CONF_CONTEXT_ATTRIBUTE, b.conf);
     ctx.getServletContext().setAttribute(ADMINS_ACL, adminsAcl);
@@ -963,7 +956,7 @@ public final class HttpServer2 implements FilterContainer {
    * @param conf configuration.
    * @throws IOException raised on errors performing I/O.
    */
-  protected void addDefaultApps(ContextHandlerCollection parent,
+  protected void addDefaultApps(Handler.Collection parent,
       final String appDir, Configuration conf) throws IOException {
     // set up the context for "/logs/" if "hadoop.log.dir" property is defined
     // and it's enabled.
@@ -981,14 +974,15 @@ public final class HttpServer2 implements FilterContainer {
           CommonConfigurationKeys.DEFAULT_HADOOP_JETTY_LOGS_SERVE_ALIASES)) {
         @SuppressWarnings("unchecked")
         Map<String, String> params = logContext.getInitParams();
-        params.put("org.eclipse.jetty.servlet.Default.aliases", "true");
+        params.put("org.eclipse.jetty.ee10.servlet.Default.aliases", "true");
       }
       logContext.setDisplayName("logs");
       SessionHandler handler = new SessionHandler();
       handler.setHttpOnly(true);
       handler.getSessionCookieConfig().setSecure(true);
       logContext.setSessionHandler(handler);
-      logContext.addAliasCheck(new SymlinkAllowedResourceAliasChecker(logContext));
+      // TODO: Jetty 12 - SymlinkAllowedResourceAliasChecker removed, need Jetty 12 equivalent
+      // logContext.addAliasCheck(new SymlinkAllowedResourceAliasChecker(logContext));
       setContextAttributes(logContext, conf);
       addNoCacheFilter(logContext);
       defaultContexts.put(logContext, true);
@@ -1001,13 +995,14 @@ public final class HttpServer2 implements FilterContainer {
     staticContext.setDisplayName("static");
     @SuppressWarnings("unchecked")
     Map<String, String> params = staticContext.getInitParams();
-    params.put("org.eclipse.jetty.servlet.Default.dirAllowed", "false");
-    params.put("org.eclipse.jetty.servlet.Default.gzip", "true");
+    params.put("org.eclipse.jetty.ee10.servlet.Default.dirAllowed", "false");
+    params.put("org.eclipse.jetty.ee10.servlet.Default.gzip", "true");
     SessionHandler handler = new SessionHandler();
     handler.setHttpOnly(true);
     handler.getSessionCookieConfig().setSecure(true);
     staticContext.setSessionHandler(handler);
-    staticContext.addAliasCheck(new SymlinkAllowedResourceAliasChecker(staticContext));
+    // TODO: Jetty 12 - SymlinkAllowedResourceAliasChecker removed, need Jetty 12 equivalent
+    // staticContext.addAliasCheck(new SymlinkAllowedResourceAliasChecker(staticContext));
     setContextAttributes(staticContext, conf);
     defaultContexts.put(staticContext, true);
   }

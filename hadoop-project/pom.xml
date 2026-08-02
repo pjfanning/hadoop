@@ -36,7 +36,7 @@
     <!--Whether to proceed to next module if any test failures exist-->
     <maven.test.failure.ignore>true</maven.test.failure.ignore>
     <maven.test.redirectTestOutputToFile>true</maven.test.redirectTestOutputToFile>
-    <jetty.version>9.4.58.v20250814</jetty.version>
+    <jetty.version>12.0.37</jetty.version>
     <test.exclude>_</test.exclude>
     <test.exclude.pattern>_</test.exclude.pattern>
 
@@ -65,15 +65,15 @@
     <avro.version>1.12.1</avro.version>
 
     <!-- jersey version -->
-    <jersey2.version>2.46</jersey2.version>
+    <jersey2.version>3.1.10</jersey2.version>
 
     <!-- moxy version -->
-    <eclipse-persistence.version>2.7.14</eclipse-persistence.version>
+    <eclipse-persistence.version>4.0.4</eclipse-persistence.version>
     <jsonapi.version>1.1.6</jsonapi.version>
     <json.version>1.1.4</json.version>
 
     <!-- jaxb version -->
-    <jaxb.version>2.3.9</jaxb.version>
+    <jaxb.version>4.0.5</jaxb.version>
 
     <!-- jackson versions -->
     <jackson2.version>2.18.9</jackson2.version>
@@ -118,7 +118,7 @@
     <dnsjava.version>3.6.1</dnsjava.version>
 
     <guava.version>33.4.8-jre</guava.version>
-    <guice.version>5.1.0</guice.version>
+    <guice.version>7.0.0</guice.version>
 
     <bouncycastle.version>1.85</bouncycastle.version>
 
@@ -897,18 +897,12 @@
       <dependency>
         <groupId>jakarta.ws.rs</groupId>
         <artifactId>jakarta.ws.rs-api</artifactId>
-        <version>2.1.6</version>
+        <version>3.1.0</version>
       </dependency>
       <dependency>
         <groupId>org.eclipse.jetty</groupId>
         <artifactId>jetty-server</artifactId>
         <version>${jetty.version}</version>
-        <exclusions>
-          <exclusion>
-            <groupId>org.eclipse.jetty</groupId>
-            <artifactId>javax.servlet-api</artifactId>
-          </exclusion>
-        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.eclipse.jetty</groupId>
@@ -916,13 +910,13 @@
         <version>${jetty.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.eclipse.jetty</groupId>
-        <artifactId>jetty-servlet</artifactId>
+        <groupId>org.eclipse.jetty.ee10</groupId>
+        <artifactId>jetty-ee10-servlet</artifactId>
         <version>${jetty.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.eclipse.jetty</groupId>
-        <artifactId>jetty-webapp</artifactId>
+        <groupId>org.eclipse.jetty.ee10</groupId>
+        <artifactId>jetty-ee10-webapp</artifactId>
         <version>${jetty.version}</version>
       </dependency>
         <dependency>
@@ -931,8 +925,8 @@
         <version>${jetty.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.eclipse.jetty.websocket</groupId>
-        <artifactId>javax-websocket-server-impl</artifactId>
+        <groupId>org.eclipse.jetty.ee10.websocket</groupId>
+        <artifactId>jetty-ee10-websocket-jakarta-server</artifactId>
         <version>${jetty.version}</version>
         <exclusions>
           <exclusion>
@@ -940,25 +934,30 @@
             <artifactId>asm</artifactId>
           </exclusion>
           <exclusion>
-            <groupId>org.eclipse.jetty</groupId>
-            <artifactId>jetty-webapp</artifactId>
+            <groupId>org.eclipse.jetty.ee10</groupId>
+            <artifactId>jetty-ee10-webapp</artifactId>
           </exclusion>
         </exclusions>
       </dependency>
       <dependency>
+        <groupId>org.eclipse.jetty</groupId>
+        <artifactId>jetty-client</artifactId>
+        <version>${jetty.version}</version>
+      </dependency>
+      <dependency>
         <groupId>org.eclipse.jetty.websocket</groupId>
-        <artifactId>websocket-client</artifactId>
+        <artifactId>jetty-websocket-jetty-client</artifactId>
         <version>${jetty.version}</version>
       </dependency>
       <dependency>
         <groupId>jakarta.servlet.jsp</groupId>
         <artifactId>jakarta.servlet.jsp-api</artifactId>
-        <version>2.3.6</version>
+        <version>3.1.1</version>
       </dependency>
       <dependency>
         <groupId>jakarta.servlet</groupId>
         <artifactId>jakarta.servlet-api</artifactId>
-        <version>4.0.4</version>
+        <version>6.0.0</version>
       </dependency>
 
       <dependency>
@@ -2206,9 +2205,9 @@
         <version>${jsonapi.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.glassfish</groupId>
-        <artifactId>javax.json</artifactId>
-        <version>${json.version}</version>
+        <groupId>org.eclipse.parsson</groupId>
+        <artifactId>parsson</artifactId>
+        <version>1.1.7</version>
       </dependency>
       <dependency>
         <groupId>org.glassfish.jaxb</groupId>
@@ -2699,7 +2698,7 @@
                   <includes>
                     <!-- for JDK 8 support -->
                     <include>cglib:cglib:3.2.0</include>
-                    <include>com.google.inject:guice:5.1.0</include>
+                    <include>com.google.inject:guice:7.0.0</include>
                     <include>org.ow2.asm:asm:5.0.0</include>
                   </includes>
                 </bannedDependencies>
