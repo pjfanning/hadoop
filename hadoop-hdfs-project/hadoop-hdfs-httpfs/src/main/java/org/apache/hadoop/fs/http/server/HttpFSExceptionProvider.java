@@ -32,7 +32,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 /**
- * JAX-RS <code>ExceptionMapper</code> implementation that maps HttpFSServer's
+ * Jakarta-RS <code>ExceptionMapper</code> implementation that maps HttpFSServer's
  * exceptions to HTTP status codes.
  */
 @Provider

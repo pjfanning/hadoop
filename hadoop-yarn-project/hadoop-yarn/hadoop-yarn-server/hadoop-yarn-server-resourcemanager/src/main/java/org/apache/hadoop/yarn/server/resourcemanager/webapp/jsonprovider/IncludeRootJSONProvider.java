@@ -42,7 +42,7 @@ import org.apache.hadoop.conf.Configuration;
  * to ensure that JSON marshalling and unmarshalling
  * include the root element for configured classes.
  * <p>
- * This provider integrates with EclipseLink MOXy and the JAX-RS runtime (annotated with
+ * This provider integrates with EclipseLink MOXy and the Jakarta-RS runtime (annotated with
  * {@link jakarta.ws.rs.ext.Provider}), and it is configured to both produce and consume
  * {@code application/json} content types. It uses a {@link ClassSerialisationConfig}
  * to determine which classes should include

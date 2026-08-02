@@ -27,7 +27,7 @@ import com.fasterxml.jackson.databind.AnnotationIntrospector;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.type.TypeFactory;
-import com.fasterxml.jackson.jakarta.rs.json.JacksonJaxbJsonProvider;
+import com.fasterxml.jackson.jakarta.rs.json.JacksonXmlBindJsonProvider;
 import com.fasterxml.jackson.module.jakarta.xmlbind.JakartaXmlBindAnnotationIntrospector;
 import org.apache.hadoop.classification.InterfaceAudience.Private;
 import org.apache.hadoop.classification.InterfaceStability.Unstable;
@@ -35,15 +35,15 @@ import org.apache.hadoop.yarn.api.records.timeline.TimelineAbout;
 
 
 /**
- * YARN's implementation of JAX-RS abstractions based on
- * {@link JacksonJaxbJsonProvider} needed for deserialize JSON content to or
+ * YARN's implementation of Jakarta-RS abstractions based on
+ * {@link JacksonXmlBindJsonProvider} needed for deserialize JSON content to or
  * serialize it from POJO objects.
  */
 @Singleton
 @Provider
 @Unstable
 @Private
-public class YarnJacksonJaxbJsonProvider extends JacksonJaxbJsonProvider {
+public class YarnJacksonJaxbJsonProvider extends JacksonXmlBindJsonProvider {
 
   public YarnJacksonJaxbJsonProvider() {
     super();

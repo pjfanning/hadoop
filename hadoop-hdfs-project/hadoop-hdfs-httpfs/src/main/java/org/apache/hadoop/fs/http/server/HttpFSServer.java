@@ -102,7 +102,7 @@ import java.util.Set;
 /**
  * Main class of HttpFSServer server.
  * <p>
- * The <code>HttpFSServer</code> class uses Jersey JAX-RS to binds HTTP requests to the
+ * The <code>HttpFSServer</code> class uses Jersey Jakarta-RS to binds HTTP requests to the
  * different operations.
  */
 @Path(HttpFSFileSystem.SERVICE_VERSION)
